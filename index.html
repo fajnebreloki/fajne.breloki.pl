@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FajneBreloki - sklep</title>
+  <style>
+    /* tutaj Twoje style oryginalne – BEZ zmian */
+    body { margin:0; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#fff; color:#000; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; border-bottom:1px solid #ccc; background:#fff; }
+    .logo { height:70px; }
+    nav { display:flex; gap:2rem; align-items:center; }
+    nav a { color:#000; text-decoration:none; font-weight:600; font-size:1rem; transition:all .3s ease; border-bottom:2px solid transparent; padding-bottom:2px; cursor:pointer; }
+    nav a:hover, nav a.active { border-bottom:2px solid #000; }
+    .cart-icon { font-size:1.6rem; cursor:pointer; position:relative; }
+    .cart-panel { position:absolute; top:60px; right:2rem; width:360px; background:white; border:1px solid #ddd; box-shadow:0 8px 15px rgba(0,0,0,.1); border-radius:6px; padding:1rem; display:none; z-index:1000; }
+    .cart-panel h2 { margin:0 0 1rem 0; font-size:1.2rem; font-weight:700; }
+    .cart-panel ul { list-style:none; max-height:250px; overflow-y:auto; padding:0; margin:0 0 1rem 0; }
+    .cart-panel li { display:flex; align-items:center; margin-bottom:.7rem; font-size:.95rem; gap:8px; }
+    .remove-btn { background:#e53935; border:none; color:white; cursor:pointer; font-size:.8rem; padding:.2rem .5rem; border-radius:3px; margin-left:auto; transition:background-color .2s ease; }
+    .remove-btn:hover { background-color:#b71c1c; }
+    .order-btn { width:100%; background:#388e3c; border:none; color:white; padding:.6rem; font-weight:600; font-size:1rem; border-radius:5px; cursor:pointer; transition:background-color .2s ease; }
+    .order-btn:hover { background-color:#2e7d32; }
+    .promo { background:#000; color:#fff; text-align:center; padding:1rem 0; font-weight:600; font-size:1.1rem; }
+    main { padding:2rem; max-width:1200px; margin:0 auto; }
+    .products { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1.5rem; }
+    .product-card { border:1px solid #ddd; border-radius:6px; padding:1rem; text-align:center; background:#fff; transition:box-shadow .2s ease; }
+    .product-card:hover { box-shadow:0 5px 15px rgba(0,0,0,.1); }
+    .product-card img { max-width:100%; height:180px; object-fit:contain; border-radius:4px; }
+    .product-card h3 { font-size:1.1rem; margin:.8rem 0 .4rem; }
+    .product-card p { margin:.4rem 0 1rem; font-weight:600; }
+    .product-card button { background:#1976d2; border:none; color:white; padding:.6rem 1rem; border-radius:4px; cursor:pointer; font-weight:600; transition:background-color .2s ease; }
+    .product-card button:hover { background-color:#115293; }
+    /* promo-section i promo-message też zostaje tak jak poprzednio */
+    .promo-section{margin-top:1rem;display:flex;gap:.5rem;align-items:center;}
+    .promo-section input{flex:1;padding:.4rem;border:1px solid #ccc;border-radius:4px;}
+    .promo-section button{padding:.4rem .8rem;background:#000;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+    .promo-section button:hover{background:#444;}
+    .promo-message{margin-top:.5rem;font-size:.9rem;color:red;}
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="#" onclick="showSection('shop', event)">
+    <img src="file_0000000083246243a3dd67eb96fc3a82.png" alt="FajneBreloki Logo" class="logo" />
+  </a>
+  <nav>
+    <a href="#" class="active" onclick="showSection('shop', event)">Sklep</a>
+    <a href="mailto:fajnebreloki.pl@gmail.com">Kontakt</a>
+    <a href="#">Moje konto</a>
+  </nav>
+  <div class="cart-icon" id="cart-icon" title="Twój koszyk">🛒</div>
+  <div class="cart-panel" id="cart-panel">
+    <h2>Twój koszyk</h2>
+    <ul id="cart-items"></ul>
+    <p><strong>Dostawa:</strong> <span id="delivery-cost">0 PLN</span></p>
+    <p><strong>Razem:</strong> <span id="cart-total">0 PLN</span></p>
+
+    <div class="promo-section">
+      <input type="text" id="promo-code" placeholder="Wpisz kod rabatowy..." />
+      <button onclick="applyPromo()">Zatwierdź</button>
+    </div>
+    <div class="promo-message" id="promo-message"></div>
+
+    <button class="order-btn" id="order-btn">Złóż zamówienie</button>
+  </div>
+</header>
+
+<div class="promo">DARMOWA DOSTAWA od 20 PLN 🚚 | Zwroty do 14 dni</div>
+
+<main>
+  <section class="products" id="product-list"></section>
+  <section id="contact-section" style="margin-top:20px; border:1px solid #ddd; padding:10px; max-width:400px;">
+  <h2>Obsługa klienta</h2>
+  <p><strong>Numer telefonu:</strong><br>570 744 013</p>
+  <p><strong>Mail:</strong><br>kontakt@motofanzone.pl</p>
+  <p><strong>Instagram:</strong><br><a href="https://www.instagram.com/MotoFanZone" target="_blank">MotoFanZone</a></p>
+</section>
+</main>
+
+<script>
+  const products = [
+    { id:1,name:'Brelok Ride OR Die',price:10,image:'Screenshot_20250805_231753_AliExpress.jpg' },
+    { id:2,name:'Brelok Caution',price:10,image:'image.png' },
+    { id:3,name:'Brelok To Arm',price:10,image:'To arm.png' },
+    { id:4,name:'Brelok FREEDOM KEY',price:10,image:'Freedomkey.png' },
+    { id:5,name:'Brelok Danger (strzałka)',price:10,image:'Danger.png' },
+    { id:6,name:'Brelok Keep Calm',price:10,image:'Kepp.png' },
+    { id:7,name:'Brelok Motor',price:10,image:'moto.png' },
+    { id:8,name:'Brelok 0-60 Event',price:15,image:'0-60.png' },
+    { id:9,name:'Brelok Realmen Like',price:15,image:'realmen.png' },
+    { id:10,name:'Brelok Loud Pipes Save Lives',price:15,image:'loud.png' },
+    { id:11,name:'Brelok Warning dont touch my bike',price:15,image:'Warning.png' },
+    { id:12,name:'Brelok Launch Key',price:10,image:'Key.png' },
+    { id:13,name:'Brelok Drop a gear',price:15,image:'Drop.png' }
+  ];
+  let cart = [], discountRate = 0;
+  function renderProducts(){
+    const el=document.getElementById('product-list');
+    el.innerHTML='';
+    products.forEach(p=>{
+      const d=document.createElement('div');d.className='product-card';
+      d.innerHTML=`<img src="${p.image}" alt="${p.name}"/><h3>${p.name}</h3><p>${p.price} PLN</p><button onclick="addToCart(${p.id})">Dodaj do koszyka</button>`;
+      el.appendChild(d);
+    });
+  }
+  function addToCart(id){ const prod=products.find(p=>p.id===id); const it=cart.find(i=>i.id===id); it?it.qty++:cart.push({...prod,qty:1}); renderCart(); }
+  function removeFromCart(id){ cart=cart.filter(i=>i.id!==id); renderCart(); }
+  function increaseQty(id){ const i=cart.find(x=>x.id===id); if(i){i.qty++;renderCart();} }
+  function decreaseQty(id){ const i=cart.find(x=>x.id===id); if(i){i.qty--; if(i.qty<=0) removeFromCart(id); else renderCart();} }
+
+  function applyPromo(){
+    const code=document.getElementById('promo-code').value.trim().toLowerCase();
+    const msg=document.getElementById('promo-message');
+    if(!code){ msg.style.color='red'; msg.textContent='Wpisz kod promocyjny.'; discountRate=0; renderCart(); return; }
+    if(code==='breloki5'){ discountRate=0.05; msg.style.color='green'; msg.textContent='Kod "breloki5" – zniżka 5%.'; }
+    else if(code==='breloki20'){ discountRate=0.20; msg.style.color='green'; msg.textContent='Kod "breloki20" – zniżka 20%.'; }
+    else{ discountRate=0; msg.style.color='red'; msg.textContent='Niepoprawny kod rabatowy.'; }
+    renderCart();
+  }
+
+  function renderCart(){
+    const list=document.getElementById('cart-items'); list.innerHTML='';
+    if(cart.length===0){ list.innerHTML='<li>Twój koszyk jest pusty.</li>'; document.getElementById('delivery-cost').textContent='0 PLN'; document.getElementById('cart-total').textContent='0 PLN'; return; }
+    cart.forEach(item=>{
+      const li=document.createElement('li');
+      li.innerHTML=`<img src="${item.image}" alt="${item.name}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;"><span style="flex-grow:1;">${item.name}</span><div style="display:flex;align-items:center;gap:5px;"><button onclick="decreaseQty(${item.id})">−</button><span>${item.qty}</span><button onclick="increaseQty(${item.id})">+</button></div><span style="min-width:60px;">${item.price * item.qty} PLN</span><button class="remove-btn" onclick="removeFromCart(${item.id})">✖</button>`;
+      list.appendChild(li);
+    });
+    let subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+    let discount=subtotal*discountRate;
+    let after=subtotal-discount;
+    let delivery=after<20?9:0;
+    document.getElementById('delivery-cost').textContent=`${delivery} PLN`;
+    document.getElementById('cart-total').textContent=`${Math.round(after+delivery)} PLN`;
+  }
+
+  document.getElementById('cart-icon').addEventListener('click',()=>{
+    const p=document.getElementById('cart-panel');
+    p.style.display=p.style.display==='block'?'none':'block';
+  });
+  document.getElementById('order-btn').addEventListener('click',()=>{
+    window.location.href='https://docs.google.com/forms/d/e/1FAIpQLSfVPrO0jjBq2yAsK-o0CW6PzfJySfDmYKeFQechkOuoSAvUNA/viewform?usp=dialog';
+  });
+
+  renderProducts();
+  renderCart();
+</script>
+
+</body>
+</html>
